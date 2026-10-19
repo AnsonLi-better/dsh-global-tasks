@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="240" viewBox="0 0 1100 240" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">任务状态流转</title>
+  <desc id="desc">运行中进入待完结；只有正常结束且人工确认后才移出聚合。原会话始终保留，新一轮活动后重新进入聚合。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="m1 1 7 4-7 4" stroke="#9099A7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+  <rect x=".5" y=".5" width="1099" height="239" rx="16" fill="#F9FAFB" stroke="#E5E7EB"/>
+  <g font-family="'Segoe UI','Microsoft YaHei',sans-serif" text-anchor="middle">
+    <rect x="40" y="53" width="240" height="92" rx="12" fill="white" stroke="#DDE1E7"/>
+    <text x="160" y="89" font-size="21" font-weight="600" fill="#232A35">运行中</text>
+    <text x="160" y="119" font-size="13" fill="#798292">正在执行的会话</text>
+    <path d="M290 99h127" stroke="#9099A7" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="354" y="81" font-size="11" fill="#798292">结束／等待用户</text>
+    <rect x="430" y="53" width="240" height="92" rx="12" fill="white" stroke="#DDE1E7"/>
+    <text x="550" y="89" font-size="21" font-weight="600" fill="#232A35">待完结</text>
+    <text x="550" y="119" font-size="13" fill="#798292">审批 · 输入 · 失败 · 待确认</text>
+    <path d="M680 99h127" stroke="#9099A7" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="744" y="81" font-size="11" fill="#798292">正常结束 + 手动 ✓</text>
+    <rect x="820" y="53" width="240" height="92" rx="12" fill="#F0F6F2" stroke="#D6E3DA"/>
+    <text x="940" y="89" font-size="21" font-weight="600" fill="#345D44">移出聚合</text>
+    <text x="940" y="119" font-size="13" fill="#64816E">原会话保留 · 不等同于归档</text>
+    <path d="M940 156v34H160v-34" stroke="#9099A7" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <rect x="387" y="177" width="326" height="27" rx="6" fill="#F9FAFB"/>
+    <text x="550" y="195" font-size="13" fill="#657080">新一轮活动后重新进入聚合</text>
+  </g>
+</svg>
