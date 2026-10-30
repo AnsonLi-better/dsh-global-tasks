@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="600" viewBox="0 0 1160 600" fill="none" role="img" aria-labelledby="sideTitle sideDesc">
+  <title id="sideTitle">侧栏结构：全局任务区、可拖拽手柄与原生工作区列表</title>
+  <desc id="sideDesc">左侧为侧栏示意：顶部是品牌与新会话按钮，中间是全局任务区（标题旁只剩放大镜、三个互斥标签、任务行），下方是可拖拽手柄与「浏览全部会话」入口，再往下是原样保留的工作区列表。右侧以编号逐条说明五处关键位置。</desc>
+  <rect x=".5" y=".5" width="1159" height="599" rx="16" fill="#F9FAFB" stroke="#E5E7EB"/>
+  <g font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+
+    <!-- ============ 侧栏底板 ============ -->
+    <rect x="60" y="40" width="352" height="524" rx="12" fill="#FFFFFF" stroke="#DDE1E7"/>
+    <text x="60" y="28" font-size="11" fill="#929AA7">侧栏（自上而下堆叠）</text>
+
+    <!-- 品牌 -->
+    <rect x="84" y="56" width="20" height="20" rx="5" fill="#181B22"/>
+    <rect x="89" y="61" width="4" height="4" fill="#F9FAFB"/>
+    <rect x="95" y="61" width="4" height="4" fill="#F9FAFB"/>
+    <rect x="89" y="67" width="4" height="4" fill="#F9FAFB"/>
+    <rect x="95" y="67" width="4" height="4" fill="#F9FAFB"/>
+    <text x="112" y="71" font-size="12" font-weight="700" fill="#171A21">deepseek</text>
+    <rect x="172" y="60" width="54" height="14" rx="3" fill="#181B22"/>
+    <text x="199" y="70" text-anchor="middle" font-size="7.5" font-weight="700" letter-spacing="0.6" fill="#FFFFFF">HARNESS</text>
+
+    <!-- 新会话 -->
+    <rect x="84" y="88" width="304" height="30" rx="7" fill="#FFFFFF" stroke="#DDE1E7"/>
+    <circle cx="196" cy="103" r="6" fill="none" stroke="#6B7280" stroke-width="1.2"/>
+    <path d="M196 100v6M193 103h6" stroke="#6B7280" stroke-width="1.2" stroke-linecap="round"/>
+    <text x="210" y="107" font-size="11.5" fill="#232A35">新会话</text>
+
+    <!-- 导航行 -->
+    <rect x="88" y="130" width="13" height="13" rx="3" fill="none" stroke="#8A93A1" stroke-width="1.2"/>
+    <text x="112" y="141" font-size="11.5" fill="#4B5563">插件</text>
+    <circle cx="94.5" cy="162" r="6.5" fill="none" stroke="#8A93A1" stroke-width="1.2"/>
+    <path d="M94.5 159v3l2 1.6" stroke="#8A93A1" stroke-width="1.2" stroke-linecap="round"/>
+    <text x="112" y="166" font-size="11.5" fill="#4B5563">自动化任务</text>
+    <g fill="#8A93A1"><rect x="88" y="183" width="5" height="5" rx="1"/><rect x="95" y="183" width="5" height="5" rx="1"/><rect x="88" y="190" width="5" height="5" rx="1"/><rect x="95" y="190" width="5" height="5" rx="1"/></g>
+    <text x="112" y="192" font-size="11.5" fill="#4B5563">更多</text>
+    <path d="M84 210h304" stroke="#E9EBEF"/>
+
+    <!-- 全局任务标题行（只剩放大镜） -->
+    <text x="84" y="232" font-size="11.5" fill="#6B7280">全局任务</text>
+    <circle cx="374" cy="228" r="4.5" fill="none" stroke="#8A93A1" stroke-width="1.3"/>
+    <path d="M377.5 231.5 381 235" stroke="#8A93A1" stroke-width="1.3" stroke-linecap="round"/>
+
+    <!-- 三个标签 -->
+    <rect x="84" y="248" width="304" height="28" rx="8" fill="#EDEEF1"/>
+    <rect x="186" y="250" width="98" height="24" rx="6" fill="#FFFFFF" stroke="#E7E9ED"/>
+    <text x="112" y="265" font-size="11" fill="#6B7280">运行中<tspan dx="5" font-size="9" fill="#9AA2AE">1</tspan></text>
+    <text x="213" y="265" font-size="11" fill="#232A35">待处理<tspan dx="5" font-size="9" fill="#9AA2AE">3</tspan></text>
+    <text x="314" y="265" font-size="11" fill="#6B7280">待确认<tspan dx="5" font-size="9" fill="#9AA2AE">7</tspan></text>
+
+    <!-- 任务行 -->
+    <circle cx="96" cy="294" r="3" fill="#3D9F72"/>
+    <rect x="106" y="285" width="58" height="18" rx="4" fill="#E0E4E9"/>
+    <text x="112" y="298" font-size="8.5" fill="#616B7B">DsPlugins</text>
+    <text x="172" y="298" font-size="11" fill="#232A35">查找 dsh-global-tasks 插件…</text>
+
+    <circle cx="96" cy="318" r="3" fill="#BF923C"/>
+    <rect x="106" y="309" width="58" height="18" rx="4" fill="#EDEEF1"/>
+    <text x="112" y="322" font-size="8.5" fill="#616B7B">DsPlugins</text>
+    <text x="172" y="322" font-size="11" fill="#232A35">拉取仓库并更新插件</text>
+
+    <circle cx="96" cy="342" r="3" fill="#BF923C"/>
+    <rect x="106" y="333" width="70" height="18" rx="4" fill="#EDEEF1"/>
+    <text x="112" y="346" font-size="8.5" fill="#616B7B">TokenTracker</text>
+    <text x="184" y="346" font-size="11" fill="#232A35">对于 tokentracker 这个项目…</text>
+
+    <!-- 拖拽手柄（独立一条，不与虚线重叠） -->
+    <rect x="226" y="360" width="44" height="2.5" rx="1.25" fill="#D5D9DF"/>
+
+    <!-- 浏览全部会话 -->
+    <path d="M84 374h304" stroke="#DDE1E7" stroke-dasharray="2 3"/>
+    <g stroke="#8A93A1" stroke-width="1.1" fill="none" stroke-linecap="round">
+      <path d="M88 382v12"/><path d="M88 385h4M88 388.5h4M88 392h4"/>
+      <rect x="95" y="384" width="4" height="3" rx="1"/><rect x="95" y="388.5" width="4" height="3" rx="1"/>
+    </g>
+    <text x="110" y="392" font-size="11.5" fill="#4B5563">浏览全部会话</text>
+    <text x="352" y="392" font-size="9.5" fill="#9AA2AE">43</text>
+    <text x="372" y="392" font-size="9.5" fill="#9AA2AE">↗</text>
+
+    <!-- 工作区标题行（与上方「浏览全部会话」留出间隔） -->
+    <text x="84" y="428" font-size="11" fill="#8A93A1">工作区</text>
+    <g stroke="#8A93A1" stroke-width="1.1" fill="none">
+      <circle cx="332" cy="424" r="4"/><path d="M335 427l3 3"/>
+      <path d="M352 421v6M356 423v2M360 420v8M364 422v4"/>
+      <rect x="372" y="419" width="9" height="9" rx="2"/><path d="M376.5 421v5M374 423.5h5"/>
+    </g>
+
+    <!-- 工作区列表 -->
+    <g stroke="#8A93A1" stroke-width="1.2" fill="none">
+      <path d="M88 446h5l1.6 2.4h9v10.6H88z"/>
+      <path d="M96 468h5l1.6 2.4h9v10.6H96z" stroke-opacity="0.55"/>
+      <path d="M96 490h5l1.6 2.4h9v10.6H96z" stroke-opacity="0.55"/>
+      <path d="M96 512h5l1.6 2.4h9v10.6H96z" stroke-opacity="0.55"/>
+      <path d="M96 534h5l1.6 2.4h9v10.6H96z" stroke-opacity="0.55"/>
+    </g>
+    <text x="118" y="456" font-size="12.5" font-weight="500" fill="#232A35">DsPlugins</text>
+
+    <rect x="84" y="464" width="304" height="24" rx="8" fill="#EDEEF1"/>
+    <circle cx="97" cy="476" r="3.6" fill="none" stroke="#6B7280" stroke-width="1.1"/>
+    <text x="108" y="480" font-size="11" fill="#232A35">查找 dsh-global-tasks 插件…</text>
+    <text x="380" y="480" text-anchor="end" font-size="9" fill="#9AA2AE">4 分钟</text>
+
+    <text x="108" y="502" font-size="11" fill="#4B5563">拉取仓库并更新插件</text>
+    <text x="380" y="502" text-anchor="end" font-size="9" fill="#9AA2AE">7 分钟</text>
+
+    <text x="108" y="524" font-size="11" fill="#4B5563">对于 tokentracker 这个项目…</text>
+    <text x="380" y="524" text-anchor="end" font-size="9" fill="#9AA2AE">10 天</text>
+
+    <text x="108" y="546" font-size="11" fill="#9AA2AE">TokenTracker 轻量本地版规划</text>
+    <text x="380" y="546" text-anchor="end" font-size="9" fill="#9AA2AE">10 天</text>
+
+    <!-- ============ 编号标记 ============ -->
+    <g stroke="#C8CFD8" stroke-width="1"><path d="M414 232h8"/><path d="M414 262h8"/><path d="M414 361h8"/><path d="M414 392h8"/><path d="M414 428h8"/></g>
+    <g fill="#EEF1F5" stroke="#C8CFD8">
+      <circle cx="432" cy="232" r="9"/><circle cx="432" cy="262" r="9"/><circle cx="432" cy="361" r="9"/>
+      <circle cx="432" cy="392" r="9"/><circle cx="432" cy="428" r="9"/>
+    </g>
+    <g font-size="10" font-weight="600" fill="#3E4756" text-anchor="middle">
+      <text x="432" y="236">1</text><text x="432" y="266">2</text><text x="432" y="365">3</text>
+      <text x="432" y="396">4</text><text x="432" y="432">5</text>
+    </g>
+
+    <!-- ============ 图例 ============ -->
+    <g>
+      <circle cx="490" cy="126" r="11" fill="#EEF1F5" stroke="#C8CFD8"/>
+      <text x="490" y="130" text-anchor="middle" font-size="11" font-weight="600" fill="#3E4756">1</text>
+      <text x="514" y="124" font-size="14.5" font-weight="600" fill="#171A21">标题栏只剩放大镜</text>
+      <text x="514" y="148" font-size="12.5" fill="#6B7280">「所有工作区」这类静态说明已去掉，右侧只留放大镜。</text>
+      <text x="514" y="168" font-size="12.5" fill="#6B7280">点它标题就地变成搜索框，按 Esc 或清空后自动收起。</text>
+    </g>
+
+    <g>
+      <circle cx="490" cy="216" r="11" fill="#EEF1F5" stroke="#C8CFD8"/>
+      <text x="490" y="220" text-anchor="middle" font-size="11" font-weight="600" fill="#3E4756">2</text>
+      <text x="514" y="214" font-size="14.5" font-weight="600" fill="#171A21">三个互斥标签，默认落在「待处理」</text>
+      <text x="514" y="238" font-size="12.5" fill="#6B7280">运行中 / 待处理 / 待确认，一条会话只出现在一个标签里。</text>
+      <text x="514" y="258" font-size="12.5" fill="#6B7280">打开先看到卡住你的那几条，不会被越积越多的「待确认」淹没。</text>
+    </g>
+
+    <g>
+      <circle cx="490" cy="306" r="11" fill="#EEF1F5" stroke="#C8CFD8"/>
+      <text x="490" y="310" text-anchor="middle" font-size="11" font-weight="600" fill="#3E4756">3</text>
+      <text x="514" y="304" font-size="14.5" font-weight="600" fill="#171A21">可拖拽的高度手柄</text>
+      <text x="514" y="328" font-size="12.5" fill="#6B7280">上下拖动改变任务区高度，工作区列表跟着整体上下移动。</text>
+      <text x="514" y="348" font-size="12.5" fill="#6B7280">双击恢复 224px；聚焦后按 ↑ / ↓ 以 16px 步进微调。</text>
+    </g>
+
+    <g>
+      <circle cx="490" cy="396" r="11" fill="#EEF1F5" stroke="#C8CFD8"/>
+      <text x="490" y="400" text-anchor="middle" font-size="11" font-weight="600" fill="#3E4756">4</text>
+      <text x="514" y="394" font-size="14.5" font-weight="600" fill="#171A21">「浏览全部会话」在列表之后</text>
+      <text x="514" y="418" font-size="12.5" fill="#6B7280">用虚线隔开，点开主区的三级会话树；它不是第四个标签。</text>
+      <text x="514" y="438" font-size="12.5" fill="#6B7280">换一个视图看全部会话（含已归档），和「过滤活跃会话」不是一类操作。</text>
+    </g>
+
+    <g>
+      <circle cx="490" cy="486" r="11" fill="#EEF1F5" stroke="#C8CFD8"/>
+      <text x="490" y="490" text-anchor="middle" font-size="11" font-weight="600" fill="#3E4756">5</text>
+      <text x="514" y="484" font-size="14.5" font-weight="600" fill="#171A21">原生工作区列表原样保留</text>
+      <text x="514" y="508" font-size="12.5" fill="#6B7280">插件只插在它上方，不改它的样式、行结构和滚动容器。</text>
+      <text x="514" y="528" font-size="12.5" fill="#6B7280">禁用或卸载插件后，列表自动恢复成宿主原本的样子。</text>
+    </g>
+
+    <path d="M490 552h620" stroke="#E9EBEF"/>
+    <text x="490" y="574" font-size="11.5" fill="#929AA7">侧栏里三层自上而下：全局任务区 → 可拖拽手柄 → 原生工作区列表</text>
+  </g>
+</svg>

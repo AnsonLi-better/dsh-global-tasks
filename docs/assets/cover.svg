@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" fill="none" role="img" aria-labelledby="title desc">
   <title id="title">DSH Global Tasks · 全局任务</title>
-  <desc id="desc">所有项目的进展，一眼看见。右侧为功能示意：在原工作区列表上方增加运行中和待完结标签，每个会话前显示所属项目。</desc>
+  <desc id="desc">所有项目的进展，一眼看见。右侧为功能示意：在原工作区列表上方增加运行中、待处理、待确认三个标签，每个会话前显示所属项目，底部是浏览全部会话的入口。</desc>
   <rect width="1200" height="560" rx="24" fill="#F8F9FB"/>
   <rect x=".5" y=".5" width="1199" height="559" rx="23.5" stroke="#E5E7EB"/>
   <g font-family="'Segoe UI','Microsoft YaHei',sans-serif">
@@ -9,7 +9,7 @@
     <text x="104" y="75" font-size="15" font-weight="600" letter-spacing="2" fill="#555D6C">DSH GLOBAL TASKS</text>
     <text x="56" y="182" font-size="56" font-weight="700" letter-spacing="-2" fill="#171A21">全局任务</text>
     <text x="58" y="236" font-size="27" font-weight="500" fill="#343B49">所有项目的进展，一眼看见。</text>
-    <text x="58" y="293" font-size="17" fill="#6B7280">把正在执行与等待收尾的会话集中到一起。</text>
+    <text x="58" y="293" font-size="17" fill="#6B7280">把正在执行、等你处理与等待确认的会话集中到一起。</text>
     <text x="58" y="322" font-size="17" fill="#6B7280">项目有来源，任务有状态，点击回到原对话。</text>
     <path d="M58 370h420" stroke="#DDE1E7"/>
     <text x="58" y="409" font-size="14" fill="#4B5563">跨项目聚合</text>
@@ -18,6 +18,8 @@
     <circle cx="249" cy="404" r="2" fill="#A8AFBB"/>
     <text x="267" y="409" font-size="14" fill="#4B5563">原生主题</text>
     <text x="58" y="497" font-size="13" fill="#8A93A1">A community plugin for DeepSeek Harness</text>
+
+    <!-- 窗口 -->
     <rect x="566" y="42" width="584" height="476" rx="15" fill="white" stroke="#DDE1E7"/>
     <path d="M566 83h584" stroke="#E5E7EB"/>
     <circle cx="588" cy="63" r="4" fill="#CBD0D9"/>
@@ -26,35 +28,60 @@
     <text x="650" y="68" font-size="12" fill="#7B8493">Harness · 功能示意</text>
     <path d="M903 84v433" stroke="#E5E7EB"/>
     <rect x="567" y="84" width="335" height="418" fill="#F9FAFB"/>
+
+    <!-- 标题行：只剩放大镜 -->
     <text x="589" y="120" font-size="13" fill="#596273">全局任务</text>
-    <text x="808" y="120" font-size="11" fill="#8992A1">所有工作区</text>
-    <rect x="584" y="135" width="300" height="36" rx="7" fill="#EDEEF1"/>
-    <rect x="736" y="138" width="145" height="30" rx="5" fill="white"/>
-    <text x="625" y="158" font-size="13" fill="#6B7280">运行中  2</text>
-    <text x="777" y="158" font-size="13" font-weight="600" fill="#232A35">待完结  3</text>
-    <text x="594" y="198" font-size="11" fill="#929AA7">搜索项目或会话…</text>
-    <rect x="584" y="213" width="300" height="36" rx="9" fill="#EDEEF1"/>
-    <circle cx="597" cy="231" r="3.5" fill="#3D9F72"/>
-    <rect x="608" y="221" width="59" height="20" rx="4" fill="#E0E4E9"/>
-    <text x="615" y="235" font-size="10" fill="#616B7B">Website</text>
-    <text x="676" y="236" font-size="13" fill="#232A35">检查首页布局</text>
-    <text x="843" y="236" font-size="15" fill="#4C5666">✓</text>
-    <circle cx="597" cy="271" r="3.5" fill="#BF923C"/>
-    <rect x="608" y="261" width="59" height="20" rx="4" fill="#EDEEF1"/>
-    <text x="618" y="275" font-size="10" fill="#616B7B">Server</text>
-    <text x="676" y="276" font-size="13" fill="#232A35">确认接口权限</text>
-    <text x="838" y="275" font-size="10" fill="#8A93A1">待审批</text>
-    <circle cx="597" cy="311" r="3.5" fill="#3D9F72"/>
-    <rect x="608" y="301" width="59" height="20" rx="4" fill="#EDEEF1"/>
-    <text x="621" y="315" font-size="10" fill="#616B7B">Docs</text>
-    <text x="676" y="316" font-size="13" fill="#232A35">整理发布文档</text>
-    <text x="838" y="315" font-size="10" fill="#8A93A1">待确认</text>
-    <path d="M586 344h296" stroke="#E2E5EA"/>
-    <text x="590" y="372" font-size="13" fill="#8992A1">工作区</text>
-    <g stroke="#8A93A1" stroke-width="1.3"><path d="M592 393h6l2 3h11v13h-19z"/><path d="M592 433h6l2 3h11v13h-19z"/><path d="M592 473h6l2 3h11v13h-19z"/></g>
-    <text x="622" y="407" font-size="13" fill="#4B5563">Website</text>
-    <text x="622" y="447" font-size="13" fill="#4B5563">Server</text>
-    <text x="622" y="487" font-size="13" fill="#4B5563">Docs</text>
+    <circle cx="876" cy="115" r="4.5" fill="none" stroke="#8992A1" stroke-width="1.3"/>
+    <path d="M879.5 118.5 883 122" stroke="#8992A1" stroke-width="1.3" stroke-linecap="round"/>
+
+    <!-- 三个标签 -->
+    <rect x="584" y="135" width="300" height="34" rx="8" fill="#EDEEF1"/>
+    <rect x="675" y="137" width="98" height="30" rx="6" fill="white" stroke="#E7E9ED"/>
+    <text x="600" y="156" font-size="12" fill="#6B7280">运行中 <tspan font-size="10" fill="#9AA2AE">2</tspan></text>
+    <text x="697" y="156" font-size="12" font-weight="600" fill="#232A35">待处理 <tspan font-size="10" fill="#9AA2AE">3</tspan></text>
+    <text x="800" y="156" font-size="12" fill="#6B7280">待确认 <tspan font-size="10" fill="#9AA2AE">7</tspan></text>
+
+    <!-- 任务行 -->
+    <rect x="584" y="181" width="300" height="36" rx="9" fill="#EDEEF1"/>
+    <circle cx="597" cy="199" r="3.5" fill="#3D9F72"/>
+    <rect x="608" y="189" width="59" height="20" rx="4" fill="#E0E4E9"/>
+    <text x="615" y="203" font-size="10" fill="#616B7B">Website</text>
+    <text x="676" y="204" font-size="13" fill="#232A35">检查首页布局</text>
+    <text x="845" y="204" font-size="15" fill="#4C5666">✓</text>
+
+    <circle cx="597" cy="239" r="3.5" fill="#BF923C"/>
+    <rect x="608" y="229" width="59" height="20" rx="4" fill="#EDEEF1"/>
+    <text x="618" y="243" font-size="10" fill="#616B7B">Server</text>
+    <text x="676" y="244" font-size="13" fill="#232A35">确认接口权限</text>
+    <text x="838" y="243" font-size="10" fill="#8A93A1">待审批</text>
+
+    <circle cx="597" cy="279" r="3.5" fill="#C0574F"/>
+    <rect x="608" y="269" width="59" height="20" rx="4" fill="#EDEEF1"/>
+    <text x="621" y="283" font-size="10" fill="#616B7B">Docs</text>
+    <text x="676" y="284" font-size="13" fill="#232A35">整理发布文档</text>
+    <text x="838" y="283" font-size="10" fill="#8A93A1">运行失败</text>
+
+    <!-- 拖拽手柄 -->
+    <rect x="712" y="324" width="44" height="2.5" rx="1.25" fill="#D5D9DF"/>
+
+    <!-- 浏览全部会话 -->
+    <path d="M586 336h296" stroke="#DDE1E7" stroke-dasharray="2 3"/>
+    <g stroke="#8992A1" stroke-width="1.1" fill="none" stroke-linecap="round">
+      <path d="M590 343v12"/><path d="M590 346h4M590 349.5h4M590 353h4"/>
+      <rect x="597" y="345" width="4" height="3" rx="1"/><rect x="597" y="349.5" width="4" height="3" rx="1"/>
+    </g>
+    <text x="612" y="354" font-size="11.5" fill="#4B5563">浏览全部会话</text>
+    <text x="856" y="354" font-size="10" fill="#9AA2AE">43</text>
+    <text x="876" y="354" font-size="10" fill="#9AA2AE">↗</text>
+
+    <!-- 原生工作区 -->
+    <text x="590" y="386" font-size="12" fill="#8992A1">工作区</text>
+    <g stroke="#8A93A1" stroke-width="1.3"><path d="M592 405h6l2 3h11v13h-19z"/><path d="M592 443h6l2 3h11v13h-19z"/><path d="M592 481h6l2 3h11v13h-19z"/></g>
+    <text x="622" y="419" font-size="13" fill="#4B5563">Website</text>
+    <text x="622" y="457" font-size="13" fill="#4B5563">Server</text>
+    <text x="622" y="495" font-size="13" fill="#4B5563">Docs</text>
+
+    <!-- 原生对话 -->
     <text x="927" y="120" font-size="13" font-weight="600" fill="#4B5563">原生对话</text>
     <path d="M925 137h201" stroke="#E9EBEF"/>
     <rect x="969" y="166" width="155" height="45" rx="13" fill="#F0F3F8"/>

@@ -48,3 +48,63 @@
 兼容边界：仅验证本机 0.2.1-rc.2。该版本没有 before-workspaces 插槽，使用可卸载组件包装适配；升级 Harness 后应复核插槽契约。独立错误边界和结构检查用于保留原界面。原有 side-chat 插件兼容异常与本插件无关，未修改。
 
 2026-10-18 后续界面调整：按用户要求移除完结成功提示和撤销条，完结后直接移除聚合行；后台 reopen 能力保留。已重新构建、通过源码及产物语法检查并更新安装包。此项调整未重新执行桌面点击验收。
+
+2026-10-30 · 0.2.0：把「待完结」拆成「待处理」和「待确认」两个标签，默认打开「待处理」；列表高度改为可拖拽（双击恢复默认，按窗口记忆），项目标签最大宽度由 82px 放宽到 112px。
+
+- 代码：`src/model.js` 输出 `running / attention / review` 三组并导出 `TABS`、`ATTENTION_STATES`；`src/client.js` 标签数组与键盘导航改为按 `TABS` 泛化，新增指针拖拽与键盘调高；`src/styles.js` 移除固定 `max-height`，新增 `.dsgt-grip`。
+- 测试：`npm test` 26 项通过（模型 8、适配 5、Host 状态 3、客户端传输 2、传输 1、Host 导入 1）。新增「三标签互斥」「待输入归入待处理」「完结记录不能压掉待处理」三项用例。
+- 尚未完成：三标签切换与默认页需在真实 0.2.1-rc.2 桌面上复核。拖拽调整任务区高度已由用户在真实桌面确认可用（2026-10-30）；手柄的键盘微调与双击复位仍待逐项验证。
+- 高度交互实现要点：手柄位于任务列表与原生工作区列表之间，拖动改变任务区自身高度，工作区列表随之上下移动；用 Pointer Capture 而非 `preventDefault()`，避免吞掉双击复位；最小 96px、最大 60% 窗口高度；值存 `localStorage` 的 `dsh-global-tasks:list-height`，属界面偏好而非任务元数据。
+
+## 2026-10-30 · 0.3.0：会话树与批量清除
+
+改在 `dsh-global-tasks-backup-0.2.0/` 备份之上进行，0.2.0 原样保留。
+
+### 新增
+
+| 项 | 实现 |
+| --- | --- |
+| 主区会话树 | `src/tree.js` 纯投影 + `src/tree-view.js` 组件 + `src/tree-styles.js`；注册到 `main` 槽（key `global-session-tree`） |
+| 打开方式 | 任务区底部「浏览全部会话 N ↗」→ `ctx.layout.selectPanel('global-session-tree')` |
+| 返回 | 面板标题栏「← 返回会话」→ `selectPanel(null)` |
+| 会话跳转 | `ctx.uiWorkspace.openSession(id)`，与侧栏行同一入口 |
+| 批量清除 | 「待处理」标签下「全部清除」→ Host `dismiss` 动作，复用 `completions` 表 |
+
+### 设计取舍
+
+- **没有升级 storage domain 版本**。`dsh-storage` 明确「stored version differing from the descriptor rejects `version-mismatch` (no migration)」，新增表会强制 v2 并丢掉已有完结记录。改为复用 `completions` 表：`dismiss` 与 `complete` 写入同一记录形状（`userSeq`/`startSeq`/`completedAt`），活动推进即自动失效，因此不需要 `kind` 字段。
+- **`shell.leading` 不可用**。源码为 `const leadingMounted = darwin && sidebarCollapsed`，Windows 上永不渲染，故入口放在侧栏任务区底部而非窗口左上角。
+- **`main` 面板拿不到 `open`**。该槽的 owner props 只有 `useSessions`/`useWorkspaces`/`useSessionStatus` 等，跳转必须走 `ctx.uiWorkspace`，故 `inject` 增加 `uiWorkspace` 与 `layout`。
+
+### 测试
+
+`npm test` 33 项通过（模型 8、树 9、适配 5、Host 状态 7、客户端传输 2、传输 1、Host 导入 1）。新增树投影 9 项、`dismiss` 4 项。
+
+### 未完成
+
+- **会话树与「全部清除」尚未在真实桌面点击验收**。尝试用 CDP 直连 Web GUI（`http://127.0.0.1:51720`）验证，页面返回 `dsh web authentication required`，需要 `dsh web` 打印的带 token URL，本次未取得。因此树的实际渲染、`selectPanel` 切换、`uiWorkspace.openSession` 跳转、批量清除的 Host 往返均只有静态与单元级证据。
+- 构建仍在受限沙箱内用 `node_modules/@esbuild/win32-x64/esbuild.exe` CLI 出包后按 `build.mjs` 模板包装，与 `npm run build` 等价。
+- 构建说明：本次构建在受限沙箱内完成，esbuild 的 JS API 无法 spawn 子进程，改用 `node_modules/@esbuild/win32-x64/esbuild.exe` CLI 出包后按 `build.mjs` 的同一模板包装，产物与 `npm run build` 等价。
+
+## 2026-10-30 · 0.2.1-rc.5 复核与标题栏精简
+
+宿主升级到 Desktop 0.2.1-rc.5（`dshBuildCommit d4db512a`，bundled runtime `@deepseek-ai/dsh-desktop-runtime@0.2.1-rc.5`）后复核插槽契约，并从实测截图确认插件区域正常渲染。
+
+### 契约复核（对照 asar 内 `dsh-client-ui-workspace/lib/client.js`）
+
+| 契约点 | rc.5 实测 | 结论 |
+| --- | --- | --- |
+| `sidebar.workspaces` 注册 | 仍然 `children` 含 `sidebar.workspaces.session.menu.item`、`store: viewStore`、`inject: browserInjected` | `attachWorkspaceAdapter` 的三特征识别继续命中 |
+| 原生组件 props | `WorkspaceBrowser({ wide, usePanelInfo, useSessions, useSessionStatus, useWorkspaces, open, … })` | 包装层的前置兼容性检查仍成立 |
+| `main` 面板 | `renderSlot("main", {}, { entryKey: usePanelInfo(info => info.activePanelId) ?? "conversation" })` | 树面板的 keyed 注册与 `selectPanel` 校验未变 |
+| `layout.selectPanel` | `if (panelId !== null && !this.hasMainPanel(panelId)) throw` | 未注册 key 仍会抛错，行为一致 |
+| 客户端模块装载 | `window.__ModuleLoader__.load({id, factory})` | `build.mjs` 产物格式无需改动 |
+
+### 标题栏精简
+
+按要求删除标题栏右槽的「所有工作区 / All workspaces」文案：`src/client.js` 折叠态改为渲染 `null`，`src/styles.js` 删除 `.dsgt-scope` 规则与 `dsgt-head-searching` 相关描述，locale 表移除 `scope` 键。标题右侧只剩放大镜按钮，点击就地展开搜索框，Esc 或清空后收起。
+
+- 构建：`node build.mjs` 通过，`client.js` 53178 字节；`node --check index.js` / `client.js` 均通过。
+- 自动检查：33 项全部通过（模型 8、树 9、适配 5、Host 状态 7、客户端传输 2、传输 1、Host 导入 1）。
+- 产物校验：`client.js` 中已无 `所有工作区` 与 `dsgt-scope` 残留。
+- 真实桌面：截图中该文案已被移除，三个标签、列表、高度手柄与「浏览全部会话」均正常。
