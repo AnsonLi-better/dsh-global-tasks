@@ -1,0 +1,11 @@
+# The committed client bundle is a build artifact: keep it byte-identical to
+# what `node build.mjs` writes on any platform, so a clean checkout can verify
+# it by rebuilding. Without this, Windows writes CRLF and a Linux checkout
+# writes LF, and the two hashes never match.
+client.js text eol=lf
+*.js   text eol=lf
+*.mjs  text eol=lf
+*.json text eol=lf
+*.yml  text eol=lf
+*.md   text eol=lf
+*.svg  text eol=lf
