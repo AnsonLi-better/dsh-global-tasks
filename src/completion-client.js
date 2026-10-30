@@ -38,6 +38,29 @@ export function createCompletionClient(request = globalThis.fetch.bind(globalThi
       publish({ ...snapshot, records: { ...snapshot.records, [row.id]: result.record }, error: null })
       return result
     },
+    /**
+     * Clear an attention row without archiving it. Sequential by design: the Host
+     * serializes nothing, so parallel writes could interleave generations.
+     * A row that fails (for example one that started running) is reported, not thrown,
+     * so the rest of the batch still applies.
+     */
+    async dismiss(rows) {
+      const failed = []
+      let applied = 0
+      for (const row of rows) {
+        if (disposed) break
+        if (!row.activity) { failed.push({ id: row.id, error: 'Session activity is not ready.' }); continue }
+        try {
+          const result = await call(row.id, { action: 'dismiss', userSeq: row.activity.userSeq, startSeq: row.activity.startSeq })
+          ++generation
+          publish({ ...snapshot, records: { ...snapshot.records, [row.id]: result.record }, error: null })
+          applied += 1
+        } catch (error) {
+          failed.push({ id: row.id, error: error.message })
+        }
+      }
+      return { applied, failed }
+    },
     async reopen(id) {
       await call(id, { action: 'reopen' })
       ++generation
