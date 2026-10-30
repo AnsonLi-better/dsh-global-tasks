@@ -36,7 +36,7 @@ __export(client_exports, {
   inject: () => inject
 });
 module.exports = __toCommonJS(client_exports);
-var import_react = __toESM(require("react"), 1);
+var import_react2 = __toESM(require("react"), 1);
 
 // src/adapter.js
 var SLOT = "sidebar.workspaces";
@@ -181,6 +181,7 @@ function completionMatches(record, activity) {
 
 // src/model.js
 var ATTENTION_STATES = ["approval", "input", "failed"];
+var TABS = ["running", "attention", "review"];
 function deriveTasks(list, workspaceSnapshot, statuses, completed, ungrouped = "\u672A\u5206\u7EC4") {
   const archived = new Set(workspaceSnapshot.archivedSessionIds ?? []);
   const ownership = /* @__PURE__ */ new Map();
@@ -216,29 +217,475 @@ function filterTasks(rows, query) {
 var CSS = `
 .dsgt{flex:none;min-width:0;margin:4px 0 12px;color:var(--dsw-alias-label-primary);font:inherit}
 .dsgt *{box-sizing:border-box}.dsgt button,.dsgt input{font:inherit;color:inherit}
-.dsgt-head{display:flex;justify-content:space-between;align-items:center;padding:2px 8px 8px;font-size:12px;color:var(--dsw-alias-label-secondary)}
-.dsgt-scope{font-size:11px;color:var(--dsw-alias-label-tertiary)}
+.dsgt-head{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:2px 8px 8px;font-size:12px;color:var(--dsw-alias-label-secondary);min-height:26px}
 .dsgt-tabs{display:flex;gap:4px;padding:3px;margin:0 4px 6px;border-radius:8px;background:var(--dsw-alias-interactive-bg-hover)}
 .dsgt-tab{flex:1;cursor:pointer;border:0;border-radius:6px;padding:4px;line-height:22px;background:transparent;font-size:12px!important;color:var(--dsw-alias-label-secondary)!important}
 .dsgt-tab[aria-selected=true]{background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary)!important}.dsgt-count{margin-left:5px;font-size:10px;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-tertiary)}
-.dsgt-search{width:calc(100% - 8px);height:28px;margin:0 4px 5px;padding:4px 8px;border:1px solid transparent;border-radius:6px;background:transparent;font-size:11px!important;outline:none}.dsgt-search::placeholder{color:var(--dsw-alias-label-tertiary)}.dsgt-search:focus{border-color:var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-base)}
-.dsgt-list{max-height:min(224px,30vh);overflow:auto;min-height:32px;scrollbar-width:thin}
+/* The icon is the header's only right-hand control; it expands into the field. */
+.dsgt-searchbtn{flex:none;width:22px;height:22px;border:0;border-radius:5px;background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--dsw-alias-label-tertiary);padding:0}
+.dsgt-searchbtn:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
+.dsgt-search{flex:1;min-width:0;max-width:150px;height:22px;padding:0 6px;border:1px solid var(--dsw-alias-border-l2);border-radius:5px;background:var(--dsw-alias-bg-base);font-size:11px!important;outline:none}
+.dsgt-search::placeholder{color:var(--dsw-alias-label-tertiary)}
+.dsgt-search:focus{border-color:var(--dsw-alias-state-business-primary)}
+.dsgt-searchclear{flex:none;width:20px;height:20px;border:0;border-radius:4px;background:transparent;cursor:pointer;display:grid;place-items:center;font-size:10px!important;color:var(--dsw-alias-label-tertiary);padding:0}
+.dsgt-searchclear:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
+.dsgt-list{overflow:auto;min-height:96px;scrollbar-width:thin;overscroll-behavior:contain}
+.dsgt-grip{flex:none;display:flex;align-items:center;justify-content:center;height:9px;margin:0 4px;cursor:ns-resize;border-radius:4px;touch-action:none}
+.dsgt-grip span{width:24px;height:2px;border-radius:1px;background:var(--dsw-alias-border-l2);opacity:.6}
+.dsgt-grip:hover span,.dsgt-grip:focus-visible span{background:var(--dsw-alias-state-business-primary);opacity:1}
+.dsgt-grip:focus-visible{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-1px}
 .dsgt-row{display:flex;align-items:center;gap:5px;height:32px;border-radius:12px;padding:0 8px;margin:1px 0;min-width:0}.dsgt-row:hover,.dsgt-row[data-current=true]{background:var(--dsw-alias-interactive-bg-hover)}
 .dsgt-open{display:flex;align-items:center;gap:6px;flex:1;min-width:0;height:32px;padding:0;border:0;background:transparent;text-align:left;cursor:pointer}
 .dsgt-dot{flex:none;width:6px;height:6px;border-radius:50%;background:var(--dsw-alias-state-idle-primary)}.dsgt-dot[data-state=running]{background:var(--dsw-alias-label-tertiary)}.dsgt-dot[data-state=approval],.dsgt-dot[data-state=input]{background:var(--dsw-alias-state-warn-primary)}.dsgt-dot[data-state=failed]{background:var(--dsw-alias-state-error-primary)}.dsgt-dot[data-state=review]{background:var(--dsw-alias-state-success-primary)}
-.dsgt-project{flex:none;max-width:82px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 5px;line-height:18px;border-radius:4px;font-size:10px;color:var(--dsw-alias-label-secondary);background:var(--dsw-alias-interactive-bg-hover)}
+.dsgt-project{flex:none;max-width:112px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 5px;line-height:18px;border-radius:4px;font-size:10px;color:var(--dsw-alias-label-secondary);background:var(--dsw-alias-interactive-bg-hover)}
 .dsgt-title{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}.dsgt-state{flex:none;color:var(--dsw-alias-label-tertiary);font-size:10px}
 .dsgt-complete{flex:none;border:0;padding:0 3px;width:24px;height:28px;border-radius:6px;background:transparent;cursor:pointer;opacity:0}.dsgt-row:hover .dsgt-complete,.dsgt-complete:focus-visible{opacity:1}.dsgt-complete:disabled{opacity:.4;cursor:wait}
+.dsgt-all{display:flex;align-items:center;gap:7px;width:calc(100% - 8px);height:30px;margin:2px 4px 0;padding:0 8px;border:0;border-top:1px dashed var(--dsw-alias-border-l2);border-radius:0;background:transparent;cursor:pointer;font-size:11.5px!important;color:var(--dsw-alias-label-secondary)}
+.dsgt-all:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
+.dsgt-all-ic{flex:none;display:inline-flex;color:var(--dsw-alias-label-tertiary)}
+.dsgt-all:hover .dsgt-all-ic,.dsgt-all-on .dsgt-all-ic{color:var(--dsw-alias-state-business-primary)}
+.dsgt-all-lbl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+.dsgt-all-n{flex:none;font-size:10px;color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums}
+.dsgt-all-go{flex:none;font-size:10px;color:var(--dsw-alias-label-tertiary);opacity:.7}
+.dsgt-all-on{color:var(--dsw-alias-label-primary)}
+.dsgt-clear{display:flex;align-items:center;gap:8px;margin:2px 4px 4px;padding:0 8px;height:26px;font-size:11px;color:var(--dsw-alias-label-tertiary)}
+.dsgt-clear-btn{margin-left:auto;flex:none;border:1px solid var(--dsw-alias-border-l2);border-radius:5px;background:transparent;cursor:pointer;padding:2px 8px;font-size:11px!important;color:var(--dsw-alias-label-secondary)}
+.dsgt-clear-btn:hover{background:var(--dsw-alias-interactive-bg-hover-danger);color:var(--dsw-alias-state-error-primary);border-color:var(--dsw-alias-state-error-secondary)}
+.dsgt-clear-btn:disabled{opacity:.5;cursor:wait}
 .dsgt-empty{padding:12px 8px;font-size:12px;color:var(--dsw-alias-label-tertiary)}.dsgt-message{display:flex;align-items:center;gap:8px;padding:6px 8px;font-size:11px;color:var(--dsw-alias-label-secondary)}.dsgt-message[role=alert]{color:var(--dsw-alias-state-error-primary)}.dsgt-link{border:0;background:transparent;cursor:pointer;padding:2px;color:inherit;font-size:11px!important;white-space:nowrap}.dsgt-message span{min-width:0;overflow-wrap:anywhere}
 .dsgt button:focus-visible{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:1px}
 `;
 
-// src/client.js
+// src/tree-view.js
+var import_react = __toESM(require("react"), 1);
+
+// src/tree.js
+var normalize = (value) => typeof value === "string" ? value.replace(/[\\/]+$/, "") : "";
+function projectName(path) {
+  const trimmed = normalize(path);
+  if (!trimmed) return "";
+  return trimmed.split(/[\\/]/).at(-1) ?? "";
+}
+function bucketOf(state) {
+  if (state === "approval" || state === "input" || state === "failed") return "attention";
+  if (state === "running") return "running";
+  if (state === "archived") return "archived";
+  return "review";
+}
+function deriveTree(list, snapshot, statuses, options = {}) {
+  const ungrouped = options.ungrouped ?? "\u672A\u5206\u7EC4";
+  const query = (options.query ?? "").trim().toLocaleLowerCase();
+  const filter = options.filter ?? "all";
+  const archived = new Set(snapshot.archivedSessionIds ?? []);
+  const ownership = /* @__PURE__ */ new Map();
+  for (const workspace of snapshot.items ?? []) {
+    for (const id of workspace.sessionIds ?? []) if (!ownership.has(id)) ownership.set(id, workspace);
+  }
+  const workspaces = [];
+  const byWorkspace = /* @__PURE__ */ new Map();
+  const counts = { all: 0, running: 0, attention: 0, review: 0, archived: 0 };
+  for (const id of list.ids ?? []) {
+    const session = list.byId?.[id];
+    if (!session || session.origin === "subagent" || session.blank) continue;
+    const workspace = ownership.get(id);
+    const path = normalize(workspace?.path || session.cwd || "");
+    const key = workspace?.workspaceId ?? (path || `~${id}`);
+    const name = workspace?.title || projectName(path) || ungrouped;
+    const status = statuses?.get?.(id);
+    const interaction = status?.pendingInteraction?.kind;
+    const running = !interaction && (status?.running ?? session.running) === true;
+    const isArchived = archived.has(id);
+    const state = interaction === "approval" ? "approval" : interaction === "input" ? "input" : running ? "running" : isArchived ? "archived" : "review";
+    let entry = byWorkspace.get(key);
+    if (!entry) {
+      entry = { key, name, path, sessions: [] };
+      byWorkspace.set(key, entry);
+      workspaces.push(entry);
+    }
+    entry.sessions.push({ id, title: session.displayTitle || session.title || id, state, updatedAt: session.updatedAt ?? 0 });
+  }
+  const result = [];
+  for (const entry of workspaces) {
+    const groups = /* @__PURE__ */ new Map();
+    for (const row of entry.sessions) {
+      const bucket = bucketOf(row.state);
+      if (!groups.has(bucket)) groups.set(bucket, []);
+      groups.get(bucket).push(row);
+      counts.all += bucket === "archived" ? 0 : 1;
+      counts[bucket] += 1;
+    }
+    const ordered = ["running", "attention", "review", "archived"].filter((bucket) => groups.has(bucket)).map((bucket) => ({ key: bucket, items: groups.get(bucket).sort((a, b) => b.updatedAt - a.updatedAt || a.id.localeCompare(b.id)) }));
+    const matchesWorkspace = !query || entry.name.toLocaleLowerCase().includes(query) || entry.path.toLocaleLowerCase().includes(query);
+    const visible = ordered.map((group) => ({
+      ...group,
+      items: group.items.filter((row) => {
+        if (filter !== "all" && bucketOf(row.state) !== filter) return false;
+        if (query && !matchesWorkspace && !row.title.toLocaleLowerCase().includes(query)) return false;
+        return true;
+      })
+    })).filter((group) => group.items.length);
+    if (!visible.length) continue;
+    const live = visible.filter((group) => group.key !== "archived").reduce((sum, group) => sum + group.items.length, 0);
+    result.push({
+      key: entry.key,
+      name: entry.name,
+      path: entry.path,
+      groups: visible,
+      total: visible.reduce((sum, group) => sum + group.items.length, 0),
+      running: visible.find((group) => group.key === "running")?.items.length ?? 0,
+      attention: visible.find((group) => group.key === "attention")?.items.length ?? 0,
+      live
+    });
+  }
+  result.sort((a, b) => b.live - a.live || a.name.localeCompare(b.name));
+  return { workspaces: result, counts, total: result.reduce((sum, entry) => sum + entry.total, 0) };
+}
+
+// src/tree-styles.js
+var TREE_CSS = `
+.gst{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;color:var(--dsw-alias-label-primary);font:inherit}
+.gst *{box-sizing:border-box}.gst button,.gst input{font:inherit;color:inherit}
+.gst-head{flex:none;display:flex;align-items:center;gap:14px;padding:18px 30px 0}
+.gst-heading{min-width:0;flex:none}
+.gst-h1{margin:0;font-size:21px;font-weight:600;line-height:1.4}
+.gst-sub{margin:3px 0 0;font-size:12px;color:var(--dsw-alias-label-tertiary)}
+.gst-search{margin-left:auto;flex:none;width:250px;height:32px;padding:0 10px;border:1px solid var(--dsw-alias-border-l2);border-radius:8px;background:transparent;outline:none;font-size:13px!important}
+.gst-search:focus{background:var(--dsw-alias-bg-base);border-color:var(--dsw-alias-label-tertiary)}
+.gst-search::placeholder{color:var(--dsw-alias-label-tertiary)}
+.gst-back{flex:none;display:inline-flex;align-items:center;height:28px;padding:0 9px;border:1px solid var(--dsw-alias-border-l2);border-radius:6px;background:transparent;cursor:pointer;font-size:12.5px!important;color:var(--dsw-alias-label-secondary)}
+.gst-back:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
+/* Sits in the title row, so it needs no top margin of its own. */
+.gst-filters{flex:none;display:flex;gap:6px;margin:0;padding:3px;border-radius:8px;background:var(--dsw-alias-interactive-bg-hover);width:fit-content}
+.gst-chip{display:flex;align-items:center;gap:6px;padding:5px 11px;border:0;border-radius:6px;background:transparent;cursor:pointer;font-size:12px!important;line-height:20px;color:var(--dsw-alias-label-secondary)}
+.gst-chip[aria-selected=true]{background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);box-shadow:0 1px 2px #00000014}
+.gst-chip-n{font-size:10px;color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums}
+.gst-bar{flex:none;display:flex;align-items:center;gap:10px;margin-top:11px;padding:0 30px 7px;font-size:11px;color:var(--dsw-alias-label-tertiary);border-bottom:1px solid var(--dsw-alias-border-l1)}
+.gst-spacer{flex:1}
+.gst-mini{border:0;background:transparent;cursor:pointer;padding:2px 7px;border-radius:5px;font-size:11px!important;color:var(--dsw-alias-label-tertiary)}
+.gst-mini:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
+.gst-total{font-variant-numeric:tabular-nums}
+.gst-tree{flex:1;min-height:0;overflow:auto;padding:10px 30px 40px;scrollbar-width:thin}
+.gst-empty{padding:48px;text-align:center;font-size:13px;color:var(--dsw-alias-label-tertiary)}
+.gst-branch{position:relative}
+.gst-leaf{position:relative;padding-left:26px;--gst-row:32px}
+.gst-leaf.gst-ws{--gst-row:36px}
+.gst-leaf.gst-grp{--gst-row:30px}
+.gst-leaf.gst-se{--gst-row:32px}
+/* The vertical stroke spans this node and its subtree; the first sibling starts
+   at its own connector and the last one stops there, so lines never dangle. */
+.gst-leaf::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--dsw-alias-border-l2)}
+.gst-leaf.gst-first::before{top:calc(var(--gst-row) / 2)}
+.gst-leaf.gst-last::before{bottom:auto;height:calc(var(--gst-row) / 2)}
+.gst-leaf.gst-first.gst-last::before{display:none}
+.gst-leaf::after{content:'';position:absolute;left:0;top:calc(var(--gst-row) / 2);width:16px;height:1px;background:var(--dsw-alias-border-l2)}
+.gst-row{display:flex;align-items:center;gap:8px;width:100%;height:var(--gst-row);padding:0 9px;border:0;border-radius:8px;background:transparent;text-align:left;cursor:pointer;position:relative}
+.gst-row:hover{background:var(--dsw-alias-interactive-bg-hover)}
+.gst-row:focus-visible{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-1px}
+.gst-caret{flex:none;width:12px;font-size:9px;color:var(--dsw-alias-label-tertiary);display:grid;place-items:center;transition:transform .12s}
+.gst-row[aria-expanded=false] .gst-caret{transform:rotate(-90deg)}
+.gst-folder{flex:none;display:inline-flex;color:var(--dsw-alias-label-secondary)}
+.gst-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gst-path{font-size:10.5px;font-family:var(--dsw-font-family-code,ui-monospace,monospace);color:var(--dsw-alias-label-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.85}
+.gst-meta{margin-left:auto;flex:none;display:flex;align-items:center;gap:8px}
+.gst-pill{font-size:10px;padding:1px 6px;border-radius:20px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);font-variant-numeric:tabular-nums}
+.gst-pill-run{background:var(--dsw-alias-state-business-tertiary);color:var(--dsw-alias-label-primary)}
+.gst-pill-att{background:var(--dsw-alias-state-warn-tertiary);color:var(--dsw-alias-state-warn-label)}
+.gst-gdot{flex:none;width:7px;height:7px;margin:0 2px;border-radius:50%;background:var(--dsw-alias-state-idle-primary)}
+.gst-gdot[data-state=running]{background:var(--dsw-alias-state-business-primary)}
+.gst-gdot[data-state=attention]{background:var(--dsw-alias-state-warn-primary)}
+.gst-gdot[data-state=review]{background:var(--dsw-alias-state-success-primary)}
+.gst-gdot[data-state=archived]{background:var(--dsw-alias-label-tertiary);opacity:.6}
+.gst-gname{font-size:12.5px;color:var(--dsw-alias-label-secondary)}
+.gst-gcount{font-size:10px;color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums}
+.gst-row-se{padding-left:9px}
+.gst-dot{flex:none;width:6px;height:6px;border-radius:50%;background:var(--dsw-alias-state-idle-primary)}
+.gst-dot[data-state=running]{background:var(--dsw-alias-state-business-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--dsw-alias-state-business-primary) 18%,transparent)}
+.gst-dot[data-state=approval],.gst-dot[data-state=input]{background:var(--dsw-alias-state-warn-primary)}
+.gst-dot[data-state=failed]{background:var(--dsw-alias-state-error-primary)}
+.gst-dot[data-state=review]{background:var(--dsw-alias-state-success-primary)}
+.gst-dot[data-state=archived]{background:var(--dsw-alias-label-tertiary);opacity:.5}
+.gst-title{flex:1;min-width:0;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gst-row-se.gst-current{background:var(--dsw-alias-interactive-bg-active)}
+.gst-row-se.gst-current .gst-title{font-weight:500}
+.gst-go{flex:none;width:20px;height:20px;border-radius:5px;display:grid;place-items:center;font-size:11px;color:var(--dsw-alias-label-tertiary);opacity:0}
+.gst-row-se:hover .gst-go,.gst-row-se.gst-current .gst-go{opacity:1}
+`;
+
+// src/tree-view.js
 var h = import_react.default.createElement;
+var TREE_PANEL_ID = "global-session-tree";
+var zh = {
+  title: "\u5168\u90E8\u4F1A\u8BDD",
+  // `translate` substitutes {name} placeholders; it never calls a function value.
+  subtitle: "{workspaces} \u4E2A\u5DE5\u4F5C\u533A \xB7 {total} \u4E2A\u4F1A\u8BDD \xB7 \u542B\u5DF2\u5F52\u6863",
+  search: "\u641C\u7D22\u9879\u76EE\u3001\u8DEF\u5F84\u6216\u4F1A\u8BDD\u2026",
+  all: "\u5168\u90E8",
+  running: "\u8FD0\u884C\u4E2D",
+  attention: "\u5F85\u5904\u7406",
+  review: "\u5F85\u786E\u8BA4",
+  runningGroup: "\u8FD0\u884C\u4E2D",
+  attentionGroup: "\u5F85\u5904\u7406",
+  reviewGroup: "\u5F85\u786E\u8BA4",
+  archivedGroup: "\u5DF2\u5F52\u6863",
+  expandAll: "\u5168\u90E8\u5C55\u5F00",
+  collapseAll: "\u5168\u90E8\u6298\u53E0",
+  count: "{n} \u4E2A\u4F1A\u8BDD",
+  empty: "\u6CA1\u6709\u5339\u914D\u7684\u4F1A\u8BDD",
+  loading: "\u6B63\u5728\u540C\u6B65\u4F1A\u8BDD\u2026",
+  back: "\u2190 \u8FD4\u56DE\u4F1A\u8BDD",
+  open: "\u6253\u5F00\u4F1A\u8BDD",
+  ungrouped: "\u672A\u5206\u7EC4",
+  filterHint: "\u5DE5\u4F5C\u533A \u2192 \u72B6\u6001 \u2192 \u4F1A\u8BDD"
+};
+var en = {
+  title: "All sessions",
+  subtitle: "{workspaces} workspaces \xB7 {total} sessions \xB7 archived included",
+  search: "Search projects, paths or sessions\u2026",
+  all: "All",
+  running: "Running",
+  attention: "Needs you",
+  review: "To confirm",
+  runningGroup: "Running",
+  attentionGroup: "Needs you",
+  reviewGroup: "To confirm",
+  archivedGroup: "Archived",
+  expandAll: "Expand all",
+  collapseAll: "Collapse all",
+  count: "{n} sessions",
+  empty: "No matching sessions",
+  loading: "Syncing sessions\u2026",
+  back: "\u2190 Back to session",
+  open: "Open session",
+  ungrouped: "Ungrouped",
+  filterHint: "Workspace \u2192 status \u2192 session"
+};
+var TREE_NS = "local.global-session-tree";
+var TREE_MESSAGES = { zh, en };
+var GROUP_LABEL = { running: "runningGroup", attention: "attentionGroup", review: "reviewGroup", archived: "archivedGroup" };
+var FILTERS = ["all", "running", "attention", "review"];
+var TreeBoundary = class extends import_react.default.Component {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(error) {
+    console.error("[global-tasks] Session tree disabled; the rest of the app is unaffected.", error);
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+};
+function useCollapsedState() {
+  const [collapsed, setCollapsed] = import_react.default.useState(() => /* @__PURE__ */ new Set());
+  const toggle = import_react.default.useCallback((key) => {
+    setCollapsed((previous) => {
+      const next = new Set(previous);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  }, []);
+  return [collapsed, toggle, setCollapsed];
+}
+function SessionTree(props) {
+  const { t, onOpen, currentId } = props;
+  const list = props.useSessions((value) => value);
+  const workspaces = props.useWorkspaces((value) => value);
+  const statuses = props.useSessionStatus((value) => value);
+  const [query, setQuery] = import_react.default.useState("");
+  const [filter, setFilter] = import_react.default.useState("all");
+  const [collapsed, toggle, setCollapsed] = useCollapsedState();
+  const treeRef = import_react.default.useRef(null);
+  const scrollRef = import_react.default.useRef(0);
+  const tree = import_react.default.useMemo(
+    () => deriveTree(list, workspaces, statuses, { ungrouped: t("ungrouped"), query, filter }),
+    [list, workspaces, statuses, query, filter, t]
+  );
+  const searching = query.trim().length > 0;
+  const isOpen = (key) => searching || !collapsed.has(key);
+  import_react.default.useEffect(() => {
+    const node = treeRef.current;
+    if (!node) return;
+    const onScroll = () => {
+      scrollRef.current = node.scrollTop;
+    };
+    node.addEventListener("scroll", onScroll, { passive: true });
+    return () => node.removeEventListener("scroll", onScroll);
+  }, []);
+  const expandAll = () => setCollapsed(/* @__PURE__ */ new Set());
+  const collapseAll = () => setCollapsed(/* @__PURE__ */ new Set([
+    ...tree.workspaces.map((entry) => `ws:${entry.key}`),
+    ...tree.workspaces.flatMap((entry) => entry.groups.map((group) => `grp:${entry.key}:${group.key}`))
+  ]));
+  const rows = [];
+  tree.workspaces.forEach((entry, wsIndex) => {
+    const wsKey = `ws:${entry.key}`;
+    const wsOpen = isOpen(wsKey);
+    rows.push(h(
+      "div",
+      {
+        key: wsKey,
+        className: `gst-leaf gst-ws${wsIndex === 0 ? " gst-first" : ""}${wsIndex === tree.workspaces.length - 1 ? " gst-last" : ""}`
+      },
+      h(
+        "button",
+        {
+          type: "button",
+          className: "gst-row gst-row-ws",
+          "aria-expanded": wsOpen,
+          onClick: () => toggle(wsKey)
+        },
+        h("span", { className: "gst-caret", "aria-hidden": true }, "\u25BE"),
+        h(
+          "span",
+          { className: "gst-folder", "aria-hidden": true },
+          h(
+            "svg",
+            { width: 15, height: 15, viewBox: "0 0 16 16", fill: "none", stroke: "currentColor", strokeWidth: 1.3 },
+            h("path", { d: "M1.8 4.2A1.2 1.2 0 0 1 3 3h3l1.4 1.6H13a1.2 1.2 0 0 1 1.2 1.2v5.4A1.2 1.2 0 0 1 13 12.4H3a1.2 1.2 0 0 1-1.2-1.2Z" })
+          )
+        ),
+        h("span", { className: "gst-name" }, entry.name),
+        entry.path ? h("span", { className: "gst-path", title: entry.path }, entry.path) : null,
+        h(
+          "span",
+          { className: "gst-meta" },
+          entry.running ? h("span", { className: "gst-pill gst-pill-run" }, `${entry.running} ${t("running")}`) : null,
+          entry.attention ? h("span", { className: "gst-pill gst-pill-att" }, `${entry.attention} ${t("attention")}`) : null,
+          h("span", { className: "gst-pill" }, entry.total)
+        )
+      )
+    ));
+    if (wsOpen) {
+      const groupRows = [];
+      entry.groups.forEach((group, groupIndex) => {
+        const groupKey = `grp:${entry.key}:${group.key}`;
+        const groupOpen = isOpen(groupKey);
+        const header = h(
+          "button",
+          {
+            type: "button",
+            className: "gst-row gst-row-grp",
+            "aria-expanded": groupOpen,
+            onClick: () => toggle(groupKey)
+          },
+          h("span", { className: "gst-caret", "aria-hidden": true }, "\u25BE"),
+          h("span", { className: "gst-gdot", "data-state": group.key, "aria-hidden": true }),
+          h("span", { className: "gst-gname" }, t(GROUP_LABEL[group.key])),
+          h("span", { className: "gst-gcount" }, group.items.length)
+        );
+        const leafRows = group.items.map((row, rowIndex) => h(
+          "div",
+          {
+            key: row.id,
+            className: `gst-leaf gst-se${rowIndex === 0 ? " gst-first" : ""}${rowIndex === group.items.length - 1 ? " gst-last" : ""}`
+          },
+          h(
+            "button",
+            {
+              type: "button",
+              className: `gst-row gst-row-se${row.id === currentId ? " gst-current" : ""}`,
+              title: t("open"),
+              onClick: () => onOpen(row.id)
+            },
+            h("span", { className: "gst-dot", "data-state": row.state, "aria-hidden": true }),
+            h("span", { className: "gst-title" }, row.title),
+            h("span", { className: "gst-go", "aria-hidden": true }, "\u2197")
+          )
+        ));
+        groupRows.push(h(
+          "div",
+          {
+            key: groupKey,
+            className: `gst-leaf gst-grp${groupIndex === 0 ? " gst-first" : ""}${groupIndex === entry.groups.length - 1 ? " gst-last" : ""}`
+          },
+          header,
+          groupOpen ? h("div", { className: "gst-branch" }, leafRows) : null
+        ));
+      });
+      rows.push(h("div", { key: `groups:${entry.key}`, className: "gst-branch" }, groupRows));
+    }
+  });
+  const loading = list.phase !== "ready" || workspaces.phase !== "ready";
+  return h(
+    "section",
+    { className: "gst", "aria-label": t("title") },
+    h("style", null, TREE_CSS),
+    h(
+      "header",
+      { className: "gst-head" },
+      props.onBack ? h("button", { type: "button", className: "gst-back", onClick: props.onBack }, t("back")) : null,
+      h(
+        "div",
+        { className: "gst-heading" },
+        h("h1", { className: "gst-h1" }, t("title")),
+        h("p", { className: "gst-sub" }, t("subtitle", { workspaces: tree.workspaces.length, total: tree.total }))
+      ),
+      // Filters share the title row so the tree body starts one band higher.
+      h(
+        "div",
+        { className: "gst-filters", role: "tablist" },
+        FILTERS.map((value) => h("button", {
+          key: value,
+          type: "button",
+          role: "tab",
+          className: "gst-chip",
+          "aria-selected": filter === value,
+          onClick: () => setFilter(value)
+        }, t(value), h("span", { className: "gst-chip-n" }, value === "all" ? tree.counts.all : tree.counts[value])))
+      ),
+      h("input", {
+        className: "gst-search",
+        type: "search",
+        value: query,
+        maxLength: 500,
+        placeholder: t("search"),
+        "aria-label": t("search"),
+        onChange: (event) => setQuery(event.target.value)
+      })
+    ),
+    h(
+      "div",
+      { className: "gst-bar" },
+      h("span", null, t("filterHint")),
+      h("span", { className: "gst-spacer" }),
+      h("button", { type: "button", className: "gst-mini", onClick: expandAll }, t("expandAll")),
+      h("button", { type: "button", className: "gst-mini", onClick: collapseAll }, t("collapseAll")),
+      h("span", { className: "gst-total" }, t("count", { n: tree.total }))
+    ),
+    h(
+      "div",
+      { className: "gst-tree", ref: treeRef, role: "tree" },
+      loading ? h("div", { className: "gst-empty" }, t("loading")) : tree.workspaces.length ? h("div", { className: "gst-branch" }, rows) : h("div", { className: "gst-empty" }, t("empty"))
+    )
+  );
+}
+function SessionTreePanel(props) {
+  const { onBack, currentId, onOpen } = props;
+  return h(TreeBoundary, null, h(SessionTree, { ...props, onBack, currentId, onOpen }));
+}
+
+// src/client.js
+var h2 = import_react2.default.createElement;
 var NS = "local.global-tasks";
-var zh = { title: "\u5168\u5C40\u4EFB\u52A1", scope: "\u6240\u6709\u5DE5\u4F5C\u533A", running: "\u8FD0\u884C\u4E2D", pending: "\u5F85\u5B8C\u7ED3", search: "\u641C\u7D22\u9879\u76EE\u6216\u4F1A\u8BDD\u2026", ungrouped: "\u672A\u5206\u7EC4", loading: "\u6B63\u5728\u540C\u6B65\u4EFB\u52A1\u2026", empty: "\u5F53\u524D\u6CA1\u6709\u76F8\u5173\u4F1A\u8BDD", retry: "\u91CD\u8BD5", complete: "\u6807\u8BB0\u5B8C\u7ED3", approval: "\u5F85\u5BA1\u6279", input: "\u5F85\u8F93\u5165", failed: "\u8FD0\u884C\u5931\u8D25", review: "\u5F85\u786E\u8BA4" };
-var en = { title: "Global tasks", scope: "All workspaces", running: "Running", pending: "Pending", search: "Search projects or sessions\u2026", ungrouped: "Ungrouped", loading: "Syncing tasks\u2026", empty: "No matching sessions", retry: "Retry", complete: "Mark complete", approval: "Approval", input: "Needs input", failed: "Failed", review: "Review" };
-var GlobalTaskBoundary = class extends import_react.default.Component {
+var zh2 = { title: "\u5168\u5C40\u4EFB\u52A1", running: "\u8FD0\u884C\u4E2D", attention: "\u5F85\u5904\u7406", review: "\u5F85\u786E\u8BA4", search: "\u641C\u7D22\u9879\u76EE\u6216\u4F1A\u8BDD\u2026", ungrouped: "\u672A\u5206\u7EC4", loading: "\u6B63\u5728\u540C\u6B65\u4EFB\u52A1\u2026", empty: "\u5F53\u524D\u6CA1\u6709\u76F8\u5173\u4F1A\u8BDD", emptyRunning: "\u6CA1\u6709\u6B63\u5728\u8FD0\u884C\u7684\u4EFB\u52A1", emptyAttention: "\u6CA1\u6709\u9700\u8981\u4F60\u5904\u7406\u7684\u4F1A\u8BDD", emptyReview: "\u6CA1\u6709\u7B49\u5F85\u786E\u8BA4\u7684\u4F1A\u8BDD", resize: "\u8C03\u6574\u4EFB\u52A1\u5217\u8868\u9AD8\u5EA6", retry: "\u91CD\u8BD5", complete: "\u6807\u8BB0\u5B8C\u7ED3", browseAll: "\u6D4F\u89C8\u5168\u90E8\u4F1A\u8BDD", clearAll: "\u5168\u90E8\u6E05\u9664", clearing: "\u6E05\u9664\u4E2D\u2026", clearHint: "{n} \u6761\u5F85\u5904\u7406", clearSearch: "\u6E05\u9664\u641C\u7D22", clearPartial: "\u5DF2\u6E05\u9664 {applied} \u6761\uFF0C{failed} \u6761\u672A\u6E05\u9664\uFF08\u53EF\u80FD\u5DF2\u5728\u8FD0\u884C\uFF09", approval: "\u5F85\u5BA1\u6279", input: "\u5F85\u8F93\u5165", failed: "\u8FD0\u884C\u5931\u8D25" };
+var en2 = { title: "Global tasks", running: "Running", attention: "Needs you", review: "To confirm", search: "Search projects or sessions\u2026", ungrouped: "Ungrouped", loading: "Syncing tasks\u2026", empty: "No matching sessions", emptyRunning: "Nothing is running", emptyAttention: "Nothing needs you", emptyReview: "Nothing awaits confirmation", resize: "Resize the task list", retry: "Retry", complete: "Mark complete", browseAll: "Browse all sessions", clearAll: "Clear all", clearing: "Clearing\u2026", clearHint: "{n} pending", clearSearch: "Clear search", clearPartial: "Cleared {applied}; {failed} left (may be running)", approval: "Approval", input: "Needs input", failed: "Failed" };
+var HEIGHT_KEY = "dsh-global-tasks:list-height";
+var DEFAULT_HEIGHT = 224;
+var MIN_HEIGHT = 96;
+var STEP = 16;
+var clampHeight = (value) => {
+  const ceiling = typeof window === "undefined" ? 480 : Math.max(MIN_HEIGHT, Math.round(window.innerHeight * 0.6));
+  return Math.min(ceiling, Math.max(MIN_HEIGHT, Math.round(value)));
+};
+var readHeight = () => {
+  try {
+    const stored = Number(window.localStorage.getItem(HEIGHT_KEY));
+    return Number.isFinite(stored) && stored >= MIN_HEIGHT ? clampHeight(stored) : DEFAULT_HEIGHT;
+  } catch {
+    return DEFAULT_HEIGHT;
+  }
+};
+var GlobalTaskBoundary = class extends import_react2.default.Component {
   state = { failed: false };
   static getDerivedStateFromError() {
     return { failed: true };
@@ -250,11 +697,14 @@ var GlobalTaskBoundary = class extends import_react.default.Component {
     return this.state.failed ? null : this.props.children;
   }
 };
-var inject = ["slots", "locale", "remote", "sessions", "workspaces"];
+var inject = ["slots", "locale", "remote", "sessions", "workspaces", "layout", "uiWorkspace"];
 function apply(ctx) {
   const completions = createCompletionClient();
   ctx.effect(() => () => completions.dispose(), "global-tasks: metadata client");
-  ctx.effect(() => ctx.locale.register(NS, { zh, en }), "global-tasks: translations");
+  ctx.effect(() => ctx.locale.register(NS, { zh: zh2, en: en2 }), "global-tasks: translations");
+  ctx.effect(() => ctx.locale.register(TREE_NS, TREE_MESSAGES), "global-tasks: tree translations");
+  const openTree = () => ctx.layout?.selectPanel?.(TREE_PANEL_ID);
+  const closeTree = () => ctx.layout?.selectPanel?.(null);
   let broadcast;
   let invalidate = () => {
   };
@@ -271,28 +721,38 @@ function apply(ctx) {
     const list = props.useSessions((value) => value);
     const workspaces = props.useWorkspaces((value) => value);
     const statuses = props.useSessionStatus((value) => value);
-    import_react.default.useSyncExternalStore((fn) => ctx.locale.subscribe(fn), () => ctx.locale.getSnapshot());
+    import_react2.default.useSyncExternalStore((fn) => ctx.locale.subscribe(fn), () => ctx.locale.getSnapshot());
     const t = ctx.locale.bind(NS);
-    const completion = import_react.default.useSyncExternalStore(completions.subscribe, completions.getSnapshot);
-    const [tab, setTab] = import_react.default.useState("running");
-    const [query, setQuery] = import_react.default.useState("");
-    const [busy, setBusy] = import_react.default.useState(null);
-    const [failure, setFailure] = import_react.default.useState(null);
-    const alive = import_react.default.useRef(true);
-    const tabs = import_react.default.useRef([]);
+    const completion = import_react2.default.useSyncExternalStore(completions.subscribe, completions.getSnapshot);
+    const [tab, setTab] = import_react2.default.useState("attention");
+    const [query, setQuery] = import_react2.default.useState("");
+    const [searchOpen, setSearchOpen] = import_react2.default.useState(false);
+    const searchRef = import_react2.default.useRef(null);
+    const [busy, setBusy] = import_react2.default.useState(null);
+    const [failure, setFailure] = import_react2.default.useState(null);
+    const [height, setHeight] = import_react2.default.useState(readHeight);
+    const heightRef = import_react2.default.useRef(height);
+    import_react2.default.useEffect(() => {
+      heightRef.current = height;
+    }, [height]);
+    const alive = import_react2.default.useRef(true);
+    const tabs = import_react2.default.useRef([]);
+    const drag = import_react2.default.useRef(null);
     const currentId = Object.values(list.byId).find((row) => (row.retainedBy?.mainView ?? 0) > 0)?.id;
+    const activePanel = typeof props.usePanelInfo === "function" ? props.usePanelInfo((info) => info.activePanelId) : null;
+    const treeOpen = activePanel === TREE_PANEL_ID;
     const ids = list.ids.filter((id) => list.byId[id]?.origin !== "subagent");
     const idsKey = JSON.stringify(ids);
-    const refresh = import_react.default.useCallback(() => {
+    const refresh = import_react2.default.useCallback(() => {
       return completions.refresh(currentId || ids[0], ids);
     }, [currentId, idsKey]);
-    import_react.default.useEffect(() => {
+    import_react2.default.useEffect(() => {
       alive.current = true;
       return () => {
         alive.current = false;
       };
     }, []);
-    import_react.default.useEffect(() => {
+    import_react2.default.useEffect(() => {
       invalidate = refresh;
       refresh();
       return () => {
@@ -300,7 +760,7 @@ function apply(ctx) {
         };
       };
     }, [refresh]);
-    import_react.default.useEffect(() => {
+    import_react2.default.useEffect(() => {
       const onFocus = () => refresh();
       window.addEventListener("focus", onFocus);
       const dispose = ctx.on("connection/reset", onFocus);
@@ -309,7 +769,13 @@ function apply(ctx) {
         dispose();
       };
     }, [refresh]);
-    const groups = import_react.default.useMemo(() => deriveTasks(list, workspaces, statuses, completion.records, t("ungrouped")), [list, workspaces, statuses, completion.records, t]);
+    import_react2.default.useEffect(() => () => {
+      if (!drag.current) return;
+      drag.current.move && window.removeEventListener("pointermove", drag.current.move);
+      drag.current.up && window.removeEventListener("pointerup", drag.current.up);
+      drag.current = null;
+    }, []);
+    const groups = import_react2.default.useMemo(() => deriveTasks(list, workspaces, statuses, completion.records, t("ungrouped")), [list, workspaces, statuses, completion.records, t]);
     const rows = filterTasks(groups[tab], query);
     const act = async (row) => {
       if (busy) return;
@@ -324,13 +790,126 @@ function apply(ctx) {
         if (alive.current) setBusy(null);
       }
     };
-    const loading = list.phase !== "ready" || workspaces.phase !== "ready" || tab === "pending" && !completion.ready;
-    return h(
+    const remember = (value) => {
+      try {
+        window.localStorage.setItem(HEIGHT_KEY, String(value));
+      } catch {
+      }
+    };
+    const startDrag = (event) => {
+      if (event.button !== 0 || drag.current) return;
+      try {
+        event.currentTarget.setPointerCapture?.(event.pointerId);
+      } catch {
+      }
+      const startY = event.clientY;
+      const startHeight = heightRef.current;
+      const move = (e) => {
+        const next = clampHeight(startHeight + (e.clientY - startY));
+        heightRef.current = next;
+        setHeight(next);
+      };
+      const up = () => {
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", up);
+        drag.current = null;
+        remember(heightRef.current);
+      };
+      drag.current = { move, up };
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", up);
+    };
+    const nudge = (event) => {
+      if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+      event.preventDefault();
+      const next = clampHeight(heightRef.current + (event.key === "ArrowDown" ? STEP : -STEP));
+      heightRef.current = next;
+      setHeight(next);
+      remember(next);
+    };
+    const resetHeight = () => {
+      heightRef.current = DEFAULT_HEIGHT;
+      setHeight(DEFAULT_HEIGHT);
+      remember(DEFAULT_HEIGHT);
+    };
+    const loading = list.phase !== "ready" || workspaces.phase !== "ready" || tab === "review" && !completion.ready;
+    const empty = tab === "running" ? t("emptyRunning") : tab === "attention" ? t("emptyAttention") : t("emptyReview");
+    const clearable = tab === "attention" ? rows.filter((row) => row.activity) : [];
+    const clearAll = async () => {
+      if (busy || !clearable.length) return;
+      setBusy("*");
+      setFailure(null);
+      try {
+        const outcome = await completions.dismiss(clearable);
+        if (outcome.failed.length) setFailure(t("clearPartial", { failed: outcome.failed.length, applied: outcome.applied }));
+        broadcast?.postMessage({ invalidate: true });
+      } catch (error) {
+        if (alive.current) setFailure(error.message);
+      } finally {
+        if (alive.current) setBusy(null);
+      }
+    };
+    return h2(
       "section",
       { className: "dsgt", "aria-label": t("title") },
-      h("style", null, CSS),
-      h("div", { className: "dsgt-head" }, h("span", null, t("title")), h("span", { className: "dsgt-scope" }, t("scope"))),
-      h("div", { className: "dsgt-tabs", role: "tablist", "aria-label": t("title") }, ["running", "pending"].map((value, index) => h("button", {
+      h2("style", null, CSS),
+      // The header's right slot holds only the search control: the icon expands
+      // the field in place and collapses back to the icon, so no static scope
+      // label competes with the native section header above it.
+      h2(
+        "div",
+        { className: "dsgt-head" },
+        h2("span", null, t("title")),
+        searchOpen ? h2("input", {
+          ref: searchRef,
+          className: "dsgt-search",
+          type: "text",
+          value: query,
+          maxLength: 500,
+          "aria-label": t("search"),
+          placeholder: t("search"),
+          autoFocus: true,
+          onChange: (event) => setQuery(event.target.value),
+          onKeyDown: (event) => {
+            if (event.key !== "Escape") return;
+            event.stopPropagation();
+            setQuery("");
+            setSearchOpen(false);
+          },
+          onBlur: () => {
+            if (!query.trim()) setSearchOpen(false);
+          }
+        }) : null,
+        searchOpen ? query ? h2("button", {
+          type: "button",
+          className: "dsgt-searchclear",
+          "aria-label": t("clearSearch"),
+          title: t("clearSearch"),
+          onClick: () => {
+            setQuery("");
+            searchRef.current?.focus();
+          }
+        }, "\u2715") : null : h2(
+          "button",
+          {
+            type: "button",
+            className: "dsgt-searchbtn",
+            "aria-label": t("search"),
+            "aria-expanded": false,
+            title: t("search"),
+            onClick: () => {
+              setSearchOpen(true);
+            }
+          },
+          h2(
+            "svg",
+            { width: 13, height: 13, viewBox: "0 0 16 16", fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round", "aria-hidden": true },
+            h2("circle", { cx: 7, cy: 7, r: 4.2 }),
+            h2("path", { d: "M10.2 10.2 13.5 13.5" })
+          )
+        )
+      ),
+      h2("div", { className: "dsgt-tabs", role: "tablist", "aria-label": t("title") }, TABS.map((value, index) => h2("button", {
         key: value,
         type: "button",
         className: "dsgt-tab",
@@ -342,31 +921,81 @@ function apply(ctx) {
         },
         onClick: () => setTab(value),
         onKeyDown: (event) => {
-          if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
-            event.preventDefault();
-            const next = event.key === "Home" ? 0 : event.key === "End" ? 1 : 1 - index;
-            setTab(["running", "pending"][next]);
-            tabs.current[next]?.focus();
-          }
+          if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+          event.preventDefault();
+          const next = event.key === "Home" ? 0 : event.key === "End" ? TABS.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + TABS.length) % TABS.length;
+          setTab(TABS[next]);
+          tabs.current[next]?.focus();
         }
-      }, t(value), h("span", { className: "dsgt-count" }, value === "pending" && !completion.ready ? "\u2026" : groups[value].length)))),
-      h("input", { className: "dsgt-search", type: "search", value: query, maxLength: 500, "aria-label": t("search"), placeholder: t("search"), onChange: (event) => setQuery(event.target.value) }),
-      h("div", { className: "dsgt-list", role: "tabpanel", "aria-label": t(tab) }, loading ? h("div", { className: "dsgt-empty" }, t("loading")) : rows.length ? rows.map((row) => h(
+      }, t(value), h2("span", { className: "dsgt-count" }, value === "review" && !completion.ready ? "\u2026" : groups[value].length)))),
+      h2("div", {
+        className: "dsgt-grip",
+        role: "separator",
+        tabIndex: 0,
+        "aria-orientation": "horizontal",
+        "aria-label": t("resize"),
+        title: t("resize"),
+        "aria-valuenow": height,
+        "aria-valuemin": MIN_HEIGHT,
+        onPointerDown: startDrag,
+        onKeyDown: nudge,
+        onDoubleClick: resetHeight
+      }, h2("span", { "aria-hidden": true })),
+      clearable.length ? h2(
+        "div",
+        { className: "dsgt-clear" },
+        h2("span", null, t("clearHint", { n: clearable.length })),
+        h2("button", {
+          type: "button",
+          className: "dsgt-clear-btn",
+          disabled: busy !== null,
+          onClick: clearAll
+        }, busy === "*" ? t("clearing") : t("clearAll"))
+      ) : null,
+      h2("div", { className: "dsgt-list", role: "tabpanel", "aria-label": t(tab), style: { height: `${height}px` } }, loading ? h2("div", { className: "dsgt-empty" }, t("loading")) : rows.length ? rows.map((row) => h2(
         "div",
         { key: row.id, className: "dsgt-row", "data-current": currentId === row.id },
-        h(
+        h2(
           "button",
           { type: "button", className: "dsgt-open", title: `${row.project} / ${row.title}
 ${row.path}
 ${t(row.state)}`, onClick: () => props.open(row.id) },
-          h("span", { className: "dsgt-dot", "data-state": row.state, "aria-hidden": true }),
-          h("span", { className: "dsgt-project" }, row.project),
-          h("span", { className: "dsgt-title" }, row.title)
+          h2("span", { className: "dsgt-dot", "data-state": row.state, "aria-hidden": true }),
+          h2("span", { className: "dsgt-project" }, row.project),
+          h2("span", { className: "dsgt-title" }, row.title)
         ),
-        row.state === "review" && row.activity ? h("button", { type: "button", className: "dsgt-complete", disabled: busy !== null, title: t("complete"), "aria-label": `${t("complete")}: ${row.title}`, onClick: () => act(row) }, "\u2713") : null,
-        tab === "pending" ? h("span", { className: "dsgt-state" }, t(row.state)) : null
-      )) : h("div", { className: "dsgt-empty" }, t("empty"))),
-      failure || completion.error ? h("div", { className: "dsgt-message", role: "alert" }, h("span", null, failure || completion.error), h("button", { className: "dsgt-link", type: "button", onClick: () => {
+        row.state === "review" && row.activity ? h2("button", { type: "button", className: "dsgt-complete", disabled: busy !== null, title: t("complete"), "aria-label": `${t("complete")}: ${row.title}`, onClick: () => act(row) }, "\u2713") : null,
+        tab !== "running" ? h2("span", { className: "dsgt-state" }, t(row.state)) : null
+      )) : h2("div", { className: "dsgt-empty" }, empty)),
+      // The "browse all" entry closes the region: it is a view switch, not a row,
+      // so it must sit after the list rather than above it.
+      h2(
+        "button",
+        {
+          type: "button",
+          className: `dsgt-all${treeOpen ? " dsgt-all-on" : ""}`,
+          onClick: () => openTree(),
+          title: t("browseAll"),
+          "aria-label": t("browseAll")
+        },
+        h2(
+          "span",
+          { className: "dsgt-all-ic", "aria-hidden": true },
+          h2(
+            "svg",
+            { width: 12, height: 12, viewBox: "0 0 16 16", fill: "none", stroke: "currentColor", strokeWidth: 1.4, strokeLinecap: "round" },
+            h2("path", { d: "M2.5 2.5v11" }),
+            h2("path", { d: "M2.5 5h3.5M2.5 8h3.5M2.5 11h3.5" }),
+            h2("rect", { x: 9, y: 3.6, width: 4.5, height: 2.8, rx: 1 }),
+            h2("rect", { x: 9, y: 6.6, width: 4.5, height: 2.8, rx: 1 }),
+            h2("rect", { x: 9, y: 9.6, width: 4.5, height: 2.8, rx: 1 })
+          )
+        ),
+        h2("span", { className: "dsgt-all-lbl" }, t("browseAll")),
+        h2("span", { className: "dsgt-all-n" }, ids.length),
+        h2("span", { className: "dsgt-all-go", "aria-hidden": true }, "\u2197")
+      ),
+      failure || completion.error ? h2("div", { className: "dsgt-message", role: "alert" }, h2("span", null, failure || completion.error), h2("button", { className: "dsgt-link", type: "button", onClick: () => {
         setFailure(null);
         refresh();
       } }, t("retry"))) : null
@@ -375,9 +1004,22 @@ ${t(row.state)}`, onClick: () => props.open(row.id) },
   ctx.slots.inject("sidebar.workspaces", () => attachWorkspaceAdapter(ctx, (Native, isActive) => {
     return function WorkspaceWithGlobalTasks(props) {
       const compatible = typeof props.useSessions === "function" && typeof props.useWorkspaces === "function" && typeof props.useSessionStatus === "function" && typeof props.open === "function";
-      return h(import_react.default.Fragment, null, isActive() && props.wide && compatible ? h(GlobalTaskBoundary, null, h(GlobalTasks, props)) : null, h(Native, props));
+      return h2(import_react2.default.Fragment, null, isActive() && props.wide && compatible ? h2(GlobalTaskBoundary, null, h2(GlobalTasks, props)) : null, h2(Native, props));
     };
   }));
+  ctx.slots.inject("main", () => ctx.slots.register(
+    { name: "main", key: TREE_PANEL_ID, locale: TREE_NS },
+    function GlobalSessionTree(props) {
+      import_react2.default.useSyncExternalStore((fn) => ctx.locale.subscribe(fn), () => ctx.locale.getSnapshot());
+      const t = ctx.locale.bind(TREE_NS);
+      return h2(SessionTreePanel, {
+        ...props,
+        t,
+        onBack: closeTree,
+        onOpen: (sessionId) => ctx.uiWorkspace?.openSession?.(sessionId)
+      });
+    }
+  ));
 }
 
 return module.exports;
