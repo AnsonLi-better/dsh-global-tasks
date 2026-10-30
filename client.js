@@ -154,13 +154,14 @@ function completionMatches(record, activity) {
 }
 
 // src/model.js
+var ATTENTION_STATES = ["approval", "input", "failed"];
 function deriveTasks(list, workspaceSnapshot, statuses, completed, ungrouped = "\u672A\u5206\u7EC4") {
   const archived = new Set(workspaceSnapshot.archivedSessionIds ?? []);
   const ownership = /* @__PURE__ */ new Map();
   for (const workspace of workspaceSnapshot.items ?? []) {
     for (const id of workspace.sessionIds ?? []) if (!ownership.has(id)) ownership.set(id, workspace);
   }
-  const result = { running: [], pending: [] };
+  const result = { running: [], attention: [], review: [] };
   for (const id of list.ids ?? []) {
     const session = list.byId[id];
     if (!session || session.origin === "subagent" || session.blank || archived.has(id)) continue;
@@ -174,7 +175,7 @@ function deriveTasks(list, workspaceSnapshot, statuses, completed, ungrouped = "
     const project = workspace?.title || session.cwd?.replace(/[\\/]+$/, "").split(/[\\/]/).at(-1) || ungrouped;
     const state = interaction === "approval" ? "approval" : waiting ? "input" : running ? "running" : activity?.outcome && activity.outcome !== "completed" ? "failed" : "review";
     const row = { id, title: session.displayTitle || session.title || id, project, path: workspace?.path || session.cwd || "", workspaceId: workspace?.workspaceId, state, updatedAt: session.updatedAt ?? 0, activity };
-    result[running ? "running" : "pending"].push(row);
+    result[running ? "running" : ATTENTION_STATES.includes(state) ? "attention" : "review"].push(row);
   }
   const priority = { approval: 0, input: 1, failed: 2, review: 3, running: 4 };
   for (const rows of Object.values(result)) rows.sort((a, b) => priority[a.state] - priority[b.state] || b.updatedAt - a.updatedAt || a.id.localeCompare(b.id));
