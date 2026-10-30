@@ -6,6 +6,8 @@
  * DOM, storage, or the Host: it is a plain function so it can be unit tested.
  */
 
+import { PROJECTION } from './projection.js'
+
 const normalize = value => (typeof value === 'string' ? value.replace(/[\\/]+$/, '') : '')
 
 /** Project basename for a workspace path, used when a title is missing. */
@@ -63,11 +65,18 @@ export function deriveTree(list, snapshot, statuses, options = {}) {
     const interaction = status?.pendingInteraction?.kind
     const running = !interaction && (status?.running ?? session.running) === true
     const isArchived = archived.has(id)
+    // A turn that ended without success is not "waiting for your ✓": it needs
+    // attention. The outcome lives in the session's projection value, exactly as
+    // `model.js` reads it for the sidebar buckets; omitting it here filed failed
+    // sessions under review with a success dot.
+    const outcome = session.projectionValues?.[PROJECTION]?.outcome
+    const failed = !running && !interaction && outcome !== undefined && outcome !== 'completed'
     const state = interaction === 'approval' ? 'approval'
       : interaction === 'input' ? 'input'
         : running ? 'running'
-          : isArchived ? 'archived'
-            : 'review'
+          : failed ? 'failed'
+            : isArchived ? 'archived'
+              : 'review'
 
     let entry = byWorkspace.get(key)
     if (!entry) {

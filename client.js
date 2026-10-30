@@ -295,7 +295,9 @@ function deriveTree(list, snapshot, statuses, options = {}) {
     const interaction = status?.pendingInteraction?.kind;
     const running = !interaction && (status?.running ?? session.running) === true;
     const isArchived = archived.has(id);
-    const state = interaction === "approval" ? "approval" : interaction === "input" ? "input" : running ? "running" : isArchived ? "archived" : "review";
+    const outcome = session.projectionValues?.[PROJECTION]?.outcome;
+    const failed = !running && !interaction && outcome !== void 0 && outcome !== "completed";
+    const state = interaction === "approval" ? "approval" : interaction === "input" ? "input" : running ? "running" : failed ? "failed" : isArchived ? "archived" : "review";
     let entry = byWorkspace.get(key);
     if (!entry) {
       entry = { key, name, path, sessions: [] };

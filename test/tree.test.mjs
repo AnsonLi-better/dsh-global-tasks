@@ -97,3 +97,35 @@ test('workspaces are ordered by live session count then name', () => {
   assert.deepEqual(tree.workspaces.map(entry => entry.name), ['Alpha', 'Beta'])
   assert.equal(tree.total, 3)
 })
+
+test('a failed outcome lands in attention, not review', () => {
+  // Regression: the tree used to read only `running` and `pendingInteraction`, so
+  // a turn that ended with a non-completed outcome was filed under review and got
+  // the green success dot, contradicting the sidebar buckets.
+  const list = listOf(
+    row('a', { projectionValues: { 'localGlobalTaskActivity': { userSeq: 1, startSeq: 1, phase: 'idle', outcome: 'completed' } } }),
+    row('b', { projectionValues: { 'localGlobalTaskActivity': { userSeq: 1, startSeq: 1, phase: 'idle', outcome: 'failed' } } }),
+  )
+  const tree = deriveTree(list, workspaces, new Map())
+
+  const alpha = tree.workspaces.find(entry => entry.name === 'Alpha')
+  const states = alpha.groups.flatMap(group => group.items.map(item => `${group.key}:${item.state}`))
+  assert.ok(states.includes('attention:failed'), `expected attention:failed, got ${states.join(', ')}`)
+  assert.ok(states.includes('review:review'), `expected review:review, got ${states.join(', ')}`)
+  assert.equal(alpha.attention, 1)
+})
+
+test('an unknown or absent outcome stays in review', () => {
+  const list = listOf(row('a'), row('b', { projectionValues: { 'localGlobalTaskActivity': { userSeq: 1, startSeq: 1, phase: 'idle' } } }))
+  const tree = deriveTree(list, workspaces, new Map())
+  const alpha = tree.workspaces.find(entry => entry.name === 'Alpha')
+  assert.equal(alpha.attention, 0)
+  assert.equal(alpha.total, 2)
+})
+
+test('a running turn wins over a stale failed outcome', () => {
+  const list = listOf(row('a', { projectionValues: { 'localGlobalTaskActivity': { userSeq: 1, startSeq: 1, phase: 'idle', outcome: 'failed' } } }))
+  const tree = deriveTree(list, workspaces, new Map([['a', { running: true }]]))
+  const alpha = tree.workspaces.find(entry => entry.name === 'Alpha')
+  assert.deepEqual(alpha.groups.map(group => group.key), ['running'])
+})
