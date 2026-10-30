@@ -108,3 +108,37 @@
 - 自动检查：33 项全部通过（模型 8、树 9、适配 5、Host 状态 7、客户端传输 2、传输 1、Host 导入 1）。
 - 产物校验：`client.js` 中已无 `所有工作区` 与 `dsgt-scope` 残留。
 - 真实桌面：截图中该文案已被移除，三个标签、列表、高度手柄与「浏览全部会话」均正常。
+
+## 2026-10-30 · 真实浏览器端到端验收与开源准备
+
+把此前手工驱动的 CDP 检查固化为可重跑脚本，并补齐开源所需文件。
+
+### 端到端检查（`e2e/`）
+
+在临时 `DSH_HOME` 里跑真实的 `dsh web` 与 headless Chrome，通过 CDP 驱动界面；不接触真实配置、会话与完结记录。
+
+| 文件 | 作用 |
+| --- | --- |
+| `e2e/run.ps1` | 建临时 home → 引导 profile → 安装插件 → 造数据 → 起服务 → 起 Chrome → 跑检查 → 清理 |
+| `e2e/seed.mjs` | 从本机 `~/.dsh` 复制至多 6 个会话并注册到同一工作区 |
+| `e2e/gui.mjs` | 42 项 CDP 断言 |
+
+结果：**42/42 通过**，无控制台报错。覆盖区域渲染、标题、三标签、默认「待处理」、手柄 `role="separator"`、默认 224px、拖拽增高、`localStorage` 持久化、双击复位、`ArrowDown` 微调 16px、搜索图标展开/收起、搜索过滤、会话树打开/筛选/折叠/搜索/跳转/返回、以及往返后侧栏仍正常。
+
+### 过程中修掉的两个真实问题
+
+- **`seed.mjs` 在工作区存储尚不存在时直接退出**，导致种子数据从未注册，套件其实一直跑在 bootstrap 自带的 `default-workspace` 上。改为：文件缺失时合成与宿主同形状的 store；已存在同路径工作区则追加会话而非新建，避免两个半空工作区。会话目录名是路径的有损编码（分隔符与真实连字符不可区分），故真实 path/title 从源 `workspace.json` 反查，不做解码。
+- **`run.ps1` 的 `*> $null` 吞掉了引导输出**，失败时既看不到进度也看不到原因，表现为「挂起」。改为写入 `bootstrap.log` 并校验 `profiles/qa/package.json` 与 `node_modules/dsh-global-tasks` 是否真的生成，失败时打印日志尾部。
+
+### 自动化检查
+
+`npm test` **40 项通过**（模型 8、树 12、适配 5、Host 状态 7、客户端传输 2、传输 1、Host 导入 1、真实渲染 4），0 跳过。
+
+新增 `test/render-tree.test.mjs`：用 `react-dom/server` 渲染真实 `SessionTree`，而非只测纯投影。它当场暴露了一个真实缺陷——**失败回合被归入「待确认」且显示绿色成功圆点**，因为 `src/tree.js` 只读 `running`/`pendingInteraction`，没读 outcome。已修复为读 `session.projectionValues[PROJECTION].outcome`，并补 3 项回归（失败归入待处理、未知 outcome 留在待确认、运行中压过过期失败）。
+
+### 开源准备
+
+- 新增 `LICENSE`（MIT），与 `package.json` 的 `license` 字段一致。
+- `package.json` 的 `files` 补上 `LICENSE`；`e2e/` 属开发资产，不进 npm 包。
+- README 更新测试数量（33 → 40）、补端到端章节与目录树，并移除「会话树与全部清除尚未验收」的旧结论。
+
